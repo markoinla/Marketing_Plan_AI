@@ -137,7 +137,7 @@ hr {
 .offcanvas {
     background-color: var(--surface-dark);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    width: 550px !important;
+    width: 850px !important;
     z-index: 1045;
 }
 
@@ -380,7 +380,7 @@ hr {
 
 /* Menu toggle active state */
 #menu-toggle.active {
-    left: 570px;
+    left: 870px;
     background: linear-gradient(45deg, var(--surface-dark), var(--surface-dark));
 }
 
@@ -827,6 +827,8 @@ body.sidebar-open {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 1.5rem;
+    font-size: 65px !important;
+    line-height: 1.2 !important;
 }
 
 .welcome-message .lead {
