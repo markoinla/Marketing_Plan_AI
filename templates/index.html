@@ -533,6 +533,7 @@
                     contentType: 'application/json',
                     data: JSON.stringify(formData),
                     success: function(response) {
+                        console.log('Marketing plan generated successfully!');
                         $('#loadingSpinner').hide();
                         if (response.success) {
                             // First display the new content
@@ -544,13 +545,17 @@
                                 document.getElementById('floating-actions').classList.remove('d-none');
                             }, 100);
                         } else {
-                            console.log(response.error || 'Failed to generate plan');
+                            console.error('Langflow API Error:', response.error || 'Failed to generate plan');
                             $('#generatePlanBtn').prop('disabled', false).html('Generate Marketing Plan');
                         }
                     },
                     error: function(xhr, status, error) {
+                        console.error('Langflow API Error:', {
+                            status: status,
+                            error: error,
+                            response: xhr.responseText
+                        });
                         $('#loadingSpinner').hide();
-                        console.log('An error occurred while generating the plan. Please try again.');
                         $('#generatePlanBtn').prop('disabled', false).html('Generate Marketing Plan');
                     }
                 });
@@ -795,64 +800,6 @@
         mobileClose.addEventListener('click', function(e) {
             e.stopPropagation();
             closeSidebar();
-        });
-
-        // Update form submission handler
-        $('#generatePlanBtn').on('click', function(e) {
-            e.preventDefault();
-            
-            // Show loading state
-            $('#generatePlanBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...');
-            
-            // Collect form data
-            const formData = {
-                website_url: $('#website_url').val(),
-                company_name: $('#company_name').val(),
-                industry: $('#industry').val(),
-                company_description: $('#company_description').val(),
-                target_audience: $('#target_audience').val(),
-                goals: $('#goals').val(),
-                budget: $('#budgetSelect').val()
-            };
-            
-            // Send request
-            $.ajax({
-                url: '/generate-plan',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(formData),
-                success: function(response) {
-                    // Hide welcome message and show plan
-                    $('#welcome-container').addClass('d-none');
-                    $('#plan-container').removeClass('d-none');
-                    
-                    // Convert markdown to HTML and display
-                    const htmlContent = marked.parse(response.plan);
-                    $('#marketing-plan-content').html(htmlContent);
-                    
-                    // Close sidebar
-                    sidebar.classList.add('hiding');
-                    sidebar.classList.remove('show');
-                    menuToggle.classList.remove('active');
-                    document.body.classList.remove('sidebar-open');
-                    
-                    // Remove hiding class after transition
-                    setTimeout(() => {
-                        sidebar.classList.remove('hiding');
-                    }, 300);
-                    
-                    // Reset button state
-                    $('#generatePlanBtn').prop('disabled', false).text('Generate Marketing Plan');
-                },
-                error: function(xhr) {
-                    let errorMessage = 'An error occurred while generating the plan.';
-                    if (xhr.responseJSON && xhr.responseJSON.error) {
-                        errorMessage = xhr.responseJSON.error;
-                    }
-                    console.log(errorMessage);
-                    $('#generatePlanBtn').prop('disabled', false).text('Generate Marketing Plan');
-                }
-            });
         });
     </script>
 </body>
