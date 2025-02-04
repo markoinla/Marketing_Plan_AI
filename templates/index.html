@@ -89,8 +89,33 @@
                     </div>
                 </div>
                 
+                <div id="status-message" class="text-center mb-3 d-none">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="terminal-buttons">
+                                <span class="terminal-button"></span>
+                                <span class="terminal-button"></span>
+                                <span class="terminal-button"></span>
+                            </div>
+                            <div class="terminal-title">marketing-ai.exe</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">></span>
+                                <span class="terminal-text status-text"></span>
+                                <span class="terminal-cursor"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="text-center mt-4">
-                    <button type="button" id="generatePlanBtn" class="btn btn-primary btn-lg">Generate Marketing Plan</button>
+                    <button type="button" id="generatePlanBtn" class="generate-btn">
+                        <span class="generate-btn-content">
+                            <i class="fas fa-wand-magic-sparkles me-2"></i>
+                            Generate Marketing Plan
+                        </span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -98,29 +123,52 @@
 
     <!-- Main Content -->
     <main class="container py-4">
-        <!-- Floating Action Buttons -->
-        <div class="floating-actions d-none" id="floating-actions">
-            <button class="floating-btn" onclick="copyToClipboard()" title="Copy to Clipboard">
-                <i class="fas fa-copy"></i>
-                <span class="tooltip">Copy to Clipboard</span>
-            </button>
-            <button class="floating-btn" onclick="generatePDF()" title="Export as PDF">
-                <i class="fas fa-file-pdf"></i>
-                <span class="tooltip">Export as PDF</span>
-            </button>
-        </div>
+        <div id="welcome-container" class="welcome-message text-center">
+            <div class="welcome-icon mb-4">
+                <i class="fas fa-rocket" style="font-size: 3.5rem; color: var(--primary);"></i>
+            </div>
+            <h1 class="display-4 mb-3">AI for your Marketing Plan</h1>
+            <p class="lead mb-4">Generate expert marketing insights with an AI trained on 100 best-selling marketing books. Great ideas have never been this easy &mdash; or free!</p>
+            
+            <div class="features-grid mt-5">
+                <div class="feature-item">
+                    <i class="fas fa-bolt" style="color: var(--primary);"></i>
+                    <h5 class="mt-2">Lightning Fast</h5>
+                    <p>Get your plan in seconds, not days</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-brain" style="color: var(--primary);"></i>
+                    <h5 class="mt-2">AI-Powered</h5>
+                    <p>Smart strategies backed by data</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-bullseye" style="color: var(--primary);"></i>
+                    <h5 class="mt-2">Customized</h5>
+                    <p>Tailored to your unique needs</p>
+                </div>
+            </div>
 
-        <div id="welcome-container" class="welcome-message">
-            <h1 class="mb-4">Welcome to the B2B Marketing Plan Generator</h1>
-            <p class="lead">Fill out the form on the left to generate a comprehensive marketing plan tailored to your business.</p>
-            <div class="mt-4">
-                <i class="bi bi-arrow-left-circle" style="font-size: 2rem;"></i>
-                <p class="mt-2">Start by entering your company details</p>
+            <div class="start-prompt mt-5">
+                <i class="fas fa-arrow-left" style="font-size: 1.5rem; color: var(--primary);"></i>
+                <p class="mt-2">Start your journey by filling out the form</p>
             </div>
         </div>
         <div id="plan-container" class="d-none">
-            <div class="card">
-                <div class="card-body">
+            <div class="plan-content">
+                <div class="plan-header">
+                    <h2>Your AI Marketing Plan (don't tell your CEO)</h2>
+                    <div class="plan-actions">
+                        <button class="action-btn" onclick="copyToClipboard()" title="Copy to Clipboard">
+                            <i class="fas fa-copy"></i>
+                            <span>Copy</span>
+                        </button>
+                        <button class="action-btn" onclick="generatePDF()" title="Export as PDF">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>PDF</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="plan-body">
                     <div id="marketing-plan-content"></div>
                 </div>
             </div>
@@ -132,6 +180,91 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Status message cycling
+            const statusMessages = [
+                " Consulting the Ministry of Silly Marketing Walks...",
+                " Synergizing cross-functional paradigm shifts",
+                " Teaching our AI to speak fluent Corporate Buzzword...",
+                " Performing quantum account-based marketing calculations...",
+                " Conducting interpretive dance to understand your buyer personas...",
+                " Disrupting the disruptive disruption strategies...",
+                " Juggling value propositions while riding a unicorn...",
+                " Leveraging synergistic omnichannel thought leadership...",
+                " Painting your TAM, SAM, and SOM with watercolors...",
+                " Consulting the Oracle of Marketing Automation...",
+                " Performing ritualistic SEO optimization dances...",
+                " Training carrier pigeons for multi-channel outreach...",
+                " Polishing the marketing funnel with unicorn tears...",
+                " Rolling 20-sided dice for conversion rate optimization...",
+                " Aligning our chakras with your KPIs...",
+                " Rehearsing elevator pitches with Shakespeare...",
+                " Mixing content marketing potions in our cauldron...",
+                " Teaching elephants to do demand generation...",
+                " Calibrating the targeting system with chicken entrails...",
+                " Finger painting your customer journey map...",
+                " Performing interpretive dance of your sales funnel...",
+                " Harvesting rainbows for your brand colors...",
+                " Teaching monkeys to write viral LinkedIn posts...",
+                " Consulting the ancient scrolls of Gary Vee...",
+                " Summoning the spirit of Steve Jobs for UX advice...",
+                " Teaching our AI to moonwalk while generating leads...",
+                " Organizing a tea party with your target demographic...",
+                " Juggling ROI calculations with flaming torches...",
+                " Performing market research via ouija board...",
+                " Teaching our AI to do standup comedy for B2B..."
+            ];
+            
+            let messageInterval;
+
+            function getRandomMessage(exclude = null) {
+                let message;
+                do {
+                    message = statusMessages[Math.floor(Math.random() * statusMessages.length)];
+                } while (message === exclude && statusMessages.length > 1);
+                return message;
+            }
+
+            function startStatusMessages() {
+                const statusMessage = $('#status-message');
+                const statusText = statusMessage.find('.status-text');
+                const generateBtn = $('#generatePlanBtn').parent();
+                
+                // Hide the button container
+                generateBtn.fadeOut(300, function() {
+                    // Show status message after button is hidden
+                    statusMessage.removeClass('d-none').hide().fadeIn(300);
+                });
+                
+                // Set initial message
+                let currentMessage = getRandomMessage();
+                statusText.text(currentMessage);
+                
+                // Cycle through messages every 3 seconds
+                messageInterval = setInterval(() => {
+                    const nextMessage = getRandomMessage(currentMessage);
+                    currentMessage = nextMessage;
+                    statusText.fadeOut(200, function() {
+                        $(this).text(nextMessage).fadeIn(200);
+                    });
+                }, 3000);
+            }
+
+            function stopStatusMessages() {
+                const statusMessage = $('#status-message');
+                const generateBtn = $('#generatePlanBtn').parent();
+                
+                clearInterval(messageInterval);
+                
+                // Hide status message
+                statusMessage.fadeOut(300, function() {
+                    $(this).addClass('d-none');
+                    // Show the button after status message is hidden
+                    generateBtn.fadeIn(300);
+                    // Reset button text
+                    $('#generatePlanBtn').prop('disabled', false).html('Generate Another Plan');
+                });
+            }
+
             // Initialize Select2 for multiple select
             $('#goals').select2({
                 theme: 'bootstrap-5',
@@ -164,6 +297,7 @@
             $('#generatePlanBtn').click(function() {
                 // Show loading state
                 $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...');
+                startStatusMessages();
                 
                 // Get form data
                 const formData = {
@@ -176,10 +310,6 @@
                     budget: $('#budgetSelect').val()
                 };
                 
-                // Show loading spinner but keep content visible
-                $('#loadingSpinner').show();
-                $('#errorMessage').hide();
-                
                 // Make API request
                 $.ajax({
                     url: '/generate-plan',
@@ -188,7 +318,7 @@
                     data: JSON.stringify(formData),
                     success: function(response) {
                         console.log('Marketing plan generated successfully!');
-                        $('#loadingSpinner').hide();
+                        stopStatusMessages();
                         if (response.success) {
                             // First display the new content
                             displayMarketingPlan(response.plan);
@@ -204,13 +334,17 @@
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('Langflow API Error:', {
+                        console.error('Error generating marketing plan:', {
                             status: status,
                             error: error,
                             response: xhr.responseText
                         });
-                        $('#loadingSpinner').hide();
-                        $('#generatePlanBtn').prop('disabled', false).html('Generate Marketing Plan');
+                        stopStatusMessages();
+                        $('#generatePlanBtn')
+                            .prop('disabled', false)
+                            .html('Try Again')
+                            .parent()
+                            .fadeIn(300);
                     }
                 });
             });
