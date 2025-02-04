@@ -141,6 +141,21 @@ hr {
     z-index: 1045;
 }
 
+.offcanvas h5 {
+    color: var(--text-primary);
+}
+
+.offcanvas hr {
+    border-color: var(--border-dark);
+    opacity: 0.5;
+}
+
+.offcanvas hr.my-4 {
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    opacity: 0.25;
+}
+
 .offcanvas-header {
     border-bottom: 1px solid var(--border-dark);
     padding: 1.5rem;
