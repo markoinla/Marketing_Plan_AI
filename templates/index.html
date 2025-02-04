@@ -345,50 +345,13 @@
                 printWindow.close();
             } catch (error) {
                 console.error('Error generating PDF:', error);
-                showAlert('Failed to generate PDF. Please try again.');
             }
         }
         
-        function showAlert(message, type = 'danger') {
-            // Create alert container if it doesn't exist
-            let alertContainer = document.getElementById('alert-container');
-            if (!alertContainer) {
-                alertContainer = document.createElement('div');
-                alertContainer.id = 'alert-container';
-                alertContainer.className = 'position-fixed top-0 start-50 translate-middle-x mt-3';
-                alertContainer.style.zIndex = '1050';
-                document.body.appendChild(alertContainer);
-            }
-
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.role = 'alert';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            
-            // Clear any existing alerts
-            alertContainer.innerHTML = '';
-            alertContainer.appendChild(alertDiv);
-            
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 150);
-            }, 5000);
-        }
-
-        function isValidDomain(domain) {
-            // Basic domain validation regex
-            const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
-            return domainRegex.test(domain);
-        }
-
         async function autofillFromWebsite() {
             let websiteUrl = document.getElementById('website_url').value.trim();
             if (!websiteUrl) {
-                showAlert('Please enter a website URL');
+                console.log('Please enter a website URL');
                 return;
             }
 
@@ -397,7 +360,7 @@
             
             // Validate the domain
             if (!isValidDomain(websiteUrl)) {
-                showAlert('Please enter a valid domain (e.g., example.com)');
+                console.log('Please enter a valid domain (e.g., example.com)');
                 return;
             }
 
@@ -434,12 +397,10 @@
                 document.getElementById('industry').value = data.industry || '';
                 document.getElementById('company_description').value = data.company_description || '';
 
-                // Show success message
-                showAlert('Company information successfully retrieved!', 'success');
+                console.log('Company information successfully retrieved!');
 
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.message || 'Failed to analyze website');
             } finally {
                 // Always restore button to default state
                 autofillButton.innerHTML = defaultButtonState;
@@ -518,7 +479,7 @@
                     generatePlanBtn.innerHTML = 'Generate Plan';
                     
                     if (response.error) {
-                        showAlert(response.error);
+                        console.log(response.error);
                     } else {
                         displayMarketingPlan(response);
                         $('#floating-actions').removeClass('d-none');
@@ -529,7 +490,7 @@
                     generatePlanBtn.disabled = false;
                     generatePlanBtn.innerHTML = 'Generate Plan';
                     
-                    showAlert('An error occurred while generating the plan. Please try again.');
+                    console.log('An error occurred while generating the plan. Please try again.');
                 }
             });
         }
@@ -636,7 +597,7 @@
                     $('#generatePlanBtn').prop('disabled', false).text('Generate Plan');
                     
                     if (response.error) {
-                        showAlert(response.error);
+                        console.log(response.error);
                     } else {
                         displayMarketingPlan(response);
                         $('#floating-actions').removeClass('d-none');
@@ -646,7 +607,7 @@
                     // Reset button state
                     $('#generatePlanBtn').prop('disabled', false).text('Generate Plan');
                     
-                    showAlert('An error occurred while generating the plan. Please try again.');
+                    console.log('An error occurred while generating the plan. Please try again.');
                 }
             });
         });
