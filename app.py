@@ -234,16 +234,17 @@ def scrape_website(url: str) -> dict:
             )
             
             print("Received response from OpenAI")
-            raw_response = completion.choices[0].message.content
+            raw_response = completion.choices[0].message['content']
             print(f"Raw OpenAI response: {raw_response}")
             
             # Clean the response if it contains markdown
-            cleaned_response = raw_response
+            cleaned_response = raw_response.strip()
             if cleaned_response.startswith('```'):
                 cleaned_response = '\n'.join(cleaned_response.split('\n')[1:-1])
             if cleaned_response.startswith('json'):
                 cleaned_response = '\n'.join(cleaned_response.split('\n')[1:])
-                
+            cleaned_response = cleaned_response.strip()
+            
             print(f"Cleaned response: {cleaned_response}")
             
             try:
@@ -268,7 +269,7 @@ def scrape_website(url: str) -> dict:
                 
         except json.JSONDecodeError as e:
             print(f"Error parsing OpenAI response: {e}")
-            print(f"Raw response: {completion.choices[0].message.content}")
+            print(f"Raw response: {completion.choices[0].message['content']}")
             raise Exception("Invalid JSON response from OpenAI")
         
         # Create a mapping of display names to values
