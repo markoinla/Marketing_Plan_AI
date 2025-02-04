@@ -15,7 +15,7 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from bs4 import BeautifulSoup
 from typing import Optional as OptionalType
-import openai
+from openai import OpenAI
 
 # Load environment variables
 load_dotenv()
@@ -25,7 +25,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
-openai.api_key = OPENAI_API_KEY
+try:
+    openai_client = OpenAI(api_key=OPENAI_API_KEY)
+except Exception as e:
+    print(f"Error initializing OpenAI client: {e}")
+    raise
 
 # Langflow API configuration
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
@@ -161,40 +165,43 @@ def normalize_url(url: str) -> str:
         url = f'https://{url}'
     return url
 
-def scrape_website(url: str):
+def scrape_website(url: str) -> dict:
+    """Scrape website content and extract relevant information using OpenAI."""
     try:
-        print(f"\n=== Starting website scraping for URL: {url} ===")
-        
-        # Make the request
+        print(f"Attempting to scrape website: {url}")
+        # Fetch the webpage
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
+        try:
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
+            print("Successfully fetched website")
+        except requests.exceptions.SSLError:
+            print("SSL Error, trying without verification")
+            response = requests.get(url, headers=headers, timeout=10, verify=False)
+            response.raise_for_status()
         
-        print("Making request to website...")
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        
-        print("Parsing website content...")
+        # Parse HTML
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Extract title
+        # Extract text content from relevant tags
         title = soup.title.string if soup.title else ""
-        print(f"Extracted title: {title}")
+        meta_description = soup.find('meta', {'name': 'description'})
+        meta_description = meta_description.get('content', '') if meta_description else ''
         
-        # Extract meta description
-        meta_desc = soup.find('meta', attrs={'name': 'description'})
-        meta_description = meta_desc['content'] if meta_desc and 'content' in meta_desc.attrs else ""
-        print(f"Extracted meta description: {meta_description}")
-        
-        # Extract main content
+        # Get text from main content areas
         main_content = []
-        for p in soup.find_all('p'):
-            text = p.get_text().strip()
-            if len(text) > 50:  # Only include substantial paragraphs
+        for tag in soup.find_all(['p', 'h1', 'h2', 'h3', 'div.about', 'div.company']):
+            text = tag.get_text(strip=True)
+            if len(text) > 10:  # Only include substantial content
                 main_content.append(text)
         
-        print(f"Extracted {len(main_content)} paragraphs of main content")
-        
+        if not main_content:
+            print("Warning: No substantial content found on the page")
+            # Try to get any text content as fallback
+            main_content = [text for text in soup.stripped_strings if len(text) > 10][:5]
+            
         if not main_content:
             raise Exception("No content could be extracted from the website")
         
@@ -206,13 +213,12 @@ def scrape_website(url: str):
         """
         
         print("Content extracted, sending to OpenAI for analysis")
-        print(f"Content being sent to OpenAI: {content[:200]}...")
+        print(f"Content being sent to OpenAI: {content[:200]}...")  # Print first 200 chars
         
         # Use OpenAI to analyze the content
         try:
-            print("Creating OpenAI chat completion...")
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
+            completion = openai_client.chat.completions.create(
+                model="gpt-4-turbo-preview",
                 messages=[
                     {"role": "system", "content": "You are a B2B industry analyst expert. Your task is to analyze website content and categorize companies into specific industries. Always select the most appropriate industry from the provided list, even if it's not a perfect match. Return your response as a JSON object WITHOUT markdown formatting."},
                     {"role": "user", "content": f"""Analyze this website content and extract the following information in JSON format:
@@ -232,39 +238,68 @@ def scrape_website(url: str):
             )
             
             print("Received response from OpenAI")
-            raw_response = response.choices[0]['message']['content']
+            raw_response = completion.choices[0].message.content
             print(f"Raw OpenAI response: {raw_response}")
             
-            # Clean the response
-            cleaned_response = raw_response.strip()
+            # Clean the response if it contains markdown
+            cleaned_response = raw_response
             if cleaned_response.startswith('```'):
                 cleaned_response = '\n'.join(cleaned_response.split('\n')[1:-1])
             if cleaned_response.startswith('json'):
                 cleaned_response = '\n'.join(cleaned_response.split('\n')[1:])
-            cleaned_response = cleaned_response.strip()
-            
+                
             print(f"Cleaned response: {cleaned_response}")
             
             try:
                 result = json.loads(cleaned_response)
-                print(f"Parsed JSON result: {result}")
-                return result
+                print(f"Parsed OpenAI response: {result}")
             except json.JSONDecodeError as e:
-                print(f"Error parsing OpenAI response as JSON: {e}")
-                print(f"Raw response that failed to parse: {raw_response}")
-                raise Exception(f"Failed to parse OpenAI response as JSON: {e}")
+                print(f"Error parsing cleaned response: {e}")
+                # Try parsing with strict=False as fallback
+                result = json.loads(cleaned_response.strip(), strict=False)
+                print(f"Parsed response with loose parsing: {result}")
                 
         except Exception as e:
-            print(f"Error in OpenAI API call: {str(e)}")
-            print(f"OpenAI API error details: {getattr(e, 'response', None)}")
-            raise Exception(f"OpenAI API error: {str(e)}")
-            
-    except requests.RequestException as e:
+            print(f"OpenAI API error: {str(e)}")
+            raise Exception(f"Error calling OpenAI API: {str(e)}")
+        
+        try:
+            # Validate the response structure
+            required_keys = ['company_name', 'industry', 'company_description']
+            missing_keys = [key for key in required_keys if key not in result]
+            if missing_keys:
+                raise Exception(f"Missing required keys in OpenAI response: {missing_keys}")
+                
+        except json.JSONDecodeError as e:
+            print(f"Error parsing OpenAI response: {e}")
+            print(f"Raw response: {completion.choices[0].message.content}")
+            raise Exception("Invalid JSON response from OpenAI")
+        
+        # Create a mapping of display names to values
+        industry_map = {industry[1]: industry[0] for industry in B2B_INDUSTRIES if industry[0]}
+        
+        # Convert the industry name to its corresponding value
+        if result['industry'] in industry_map:
+            result['industry'] = industry_map[result['industry']]
+        else:
+            # If no exact match, try case-insensitive matching
+            industry_lower = result['industry'].lower()
+            for display_name, value in industry_map.items():
+                if display_name.lower() == industry_lower:
+                    result['industry'] = value
+                    break
+            else:
+                print(f"Warning: Industry '{result['industry']}' not found in valid industries")
+                result['industry'] = 'software_technology'
+        
+        return result
+        
+    except requests.exceptions.RequestException as e:
         print(f"Error fetching website: {str(e)}")
-        raise Exception(f"Failed to fetch website content: {str(e)}")
+        raise Exception(f"Could not access website: {str(e)}")
     except Exception as e:
-        print(f"Unexpected error in scrape_website: {str(e)}")
-        raise Exception(f"Error analyzing website content: {str(e)}")
+        print(f"Error in scrape_website: {str(e)}")
+        raise
 
 @app.route('/autofill', methods=['POST'])
 def autofill():
@@ -318,11 +353,25 @@ def autofill():
         except Exception as e:
             error_message = str(e)
             print(f"Error in scrape_website: {error_message}")
-            return jsonify({"error": f"Error analyzing website content: {error_message}"}), 500
+            print(f"Error type: {type(e).__name__}")
+            print(f"Error details: {e.__dict__}")
             
+            if "Could not access website" in error_message:
+                return jsonify({"error": error_message}), 400
+            elif "SSL" in error_message:
+                return jsonify({"error": "Could not securely connect to website"}), 400
+            elif "No content could be extracted" in error_message:
+                return jsonify({"error": "No content could be extracted from the website"}), 400
+            elif "Error calling OpenAI API" in error_message:
+                return jsonify({"error": "Error analyzing website content"}), 500
+            else:
+                return jsonify({"error": "Failed to analyze website"}), 500
+                
     except Exception as e:
         print(f"Unexpected error in autofill: {str(e)}")
-        return jsonify({"error": f"Server error: {str(e)}"}), 500
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error details: {e.__dict__}")
+        return jsonify({"error": "An unexpected error occurred"}), 500
 
 @app.route('/generate-plan', methods=['POST'])
 def generate_plan():
