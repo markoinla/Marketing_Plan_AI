@@ -15,7 +15,7 @@ from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from bs4 import BeautifulSoup
 from typing import Optional as OptionalType
-from openai import OpenAI
+import openai
 
 # Load environment variables
 load_dotenv()
@@ -25,7 +25,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
-openai_client = OpenAI()  # It will automatically use the OPENAI_API_KEY from environment
+openai.api_key = OPENAI_API_KEY
 
 # Langflow API configuration
 BASE_API_URL = "https://api.langflow.astra.datastax.com"
@@ -213,8 +213,8 @@ def scrape_website(url: str) -> dict:
         
         # Use OpenAI to analyze the content
         try:
-            completion = openai_client.chat.completions.create(
-                model="gpt-4-turbo-preview",
+            completion = openai.ChatCompletion.create(
+                model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are a B2B industry analyst expert. Your task is to analyze website content and categorize companies into specific industries. Always select the most appropriate industry from the provided list, even if it's not a perfect match. Return your response as a JSON object WITHOUT markdown formatting."},
                     {"role": "user", "content": f"""Analyze this website content and extract the following information in JSON format:
