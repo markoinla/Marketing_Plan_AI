@@ -41,6 +41,10 @@ This document outlines all the necessary steps to polish our Marketing Plan App 
     - [x] Strip any dark theme classes and styles from the cloned content
     - [x] Apply simple, clean styles for headings and text
   - [x] Test PDF generation with sample content
+- [ ] Fix PDF export issues
+  - [ ] Remove header/footer from generated PDF
+  - [ ] Remove about:blank and page numbers
+  - [ ] Ensure consistent margins across all pages
 
 ### Multiple Select Enhancement
 - [x] Fix Select2 styling to match form theme
@@ -99,30 +103,30 @@ This document outlines all the necessary steps to polish our Marketing Plan App 
 ## 5. Deployment Preparation 🌐
 
 ### GitHub Setup
-- Initialize git repository (if not done already)
-- Create .gitignore file
-  - Include common Python ignores
-  - Exclude environment files
-  - Exclude cache and build files
-- Add GitHub-specific files
-  - Issue templates
-  - Pull request template
-  - Contributing guidelines
-  - Code of conduct
+- [x] Initialize git repository (if not done already)
+- [x] Create .gitignore file
+  - [x] Include common Python ignores
+  - [x] Exclude environment files
+  - [x] Exclude cache and build files
+- [x] Add GitHub-specific files
+  - [x] Issue templates
+  - [x] Pull request template
+  - [x] Contributing guidelines
+  - [x] Code of conduct
 
 ### Environment Setup
-- Set up environment variables
-  - Create .env.example file
-  - Document all required environment variables
-  - Set up proper configuration management
-- Ensure all sensitive information is properly secured
+- [x] Set up environment variables
+  - [x] Create .env.example file
+  - [x] Document all required environment variables
+  - [x] Set up proper configuration management
+- [x] Ensure all sensitive information is properly secured
 
 ### Render.com Preparation
-- Create requirements.txt with exact versions
-- Add Procfile for Render.com deployment
-- Configure build settings
-- Set up environment variables in Render.com dashboard
-- Configure proper scaling settings
+- [x] Create requirements.txt with exact versions
+- [x] Add Procfile for Render.com deployment
+- [x] Configure build settings
+- [x] Set up environment variables in Render.com dashboard
+- [x] Configure proper scaling settings
 
 ## 6. Security 🔒
 
