@@ -350,7 +350,16 @@
         }
         
         function showAlert(message, type = 'danger') {
-            const alertContainer = document.getElementById('alert-container');
+            // Create alert container if it doesn't exist
+            let alertContainer = document.getElementById('alert-container');
+            if (!alertContainer) {
+                alertContainer = document.createElement('div');
+                alertContainer.id = 'alert-container';
+                alertContainer.className = 'position-fixed top-0 start-50 translate-middle-x mt-3';
+                alertContainer.style.zIndex = '1050';
+                document.body.appendChild(alertContainer);
+            }
+
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
             alertDiv.role = 'alert';
