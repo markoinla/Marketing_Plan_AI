@@ -822,13 +822,17 @@ body.sidebar-open {
 
 .welcome-message .display-4 {
     font-weight: 600;
-    background: linear-gradient(120deg, #ff00ff, #00ffff, #9933ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
     margin-bottom: 1.5rem;
     font-size: 65px !important;
     line-height: 1.2 !important;
+}
+
+.gradient {
+    background: linear-gradient(90deg, #ff00ff, #9933ff, #ff00ff);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-position 0.2s ease-out;
 }
 
 .welcome-message .lead {
