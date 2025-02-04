@@ -26,7 +26,10 @@ if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 
 try:
-    openai_client = OpenAI(api_key=OPENAI_API_KEY)
+    openai_client = OpenAI(
+        api_key=OPENAI_API_KEY,
+        base_url="https://api.openai.com/v1"
+    )
 except Exception as e:
     print(f"Error initializing OpenAI client: {e}")
     raise
