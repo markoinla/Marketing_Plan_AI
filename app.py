@@ -211,8 +211,8 @@ def scrape_website(url: str):
         # Use OpenAI to analyze the content
         try:
             print("Creating OpenAI chat completion...")
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",  # Using a more reliable model
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": "You are a B2B industry analyst expert. Your task is to analyze website content and categorize companies into specific industries. Always select the most appropriate industry from the provided list, even if it's not a perfect match. Return your response as a JSON object WITHOUT markdown formatting."},
                     {"role": "user", "content": f"""Analyze this website content and extract the following information in JSON format:
@@ -232,7 +232,7 @@ def scrape_website(url: str):
             )
             
             print("Received response from OpenAI")
-            raw_response = completion.choices[0].message['content']
+            raw_response = response.choices[0]['message']['content']
             print(f"Raw OpenAI response: {raw_response}")
             
             # Clean the response
