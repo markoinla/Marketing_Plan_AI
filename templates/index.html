@@ -15,9 +15,350 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/styles.css">
     <style>
+        /* PDF Export Styles */
         @page {
             size: letter;
             margin: 2.54cm;
+        }
+        @media print {
+            body {
+                font-family: 'Arial', sans-serif;
+                line-height: 1.6;
+                color: #000000 !important;
+                background-color: #ffffff !important;
+            }
+            h1, h2, h3, h4, h5, h6, p, ul, ol, li {
+                color: #000000 !important;
+            }
+            #marketing-plan-content {
+                background-color: #ffffff !important;
+            }
+            .floating-actions, #menu-toggle, #sidebar {
+                display: none !important;
+            }
+            a {
+                text-decoration: none !important;
+                color: #000000 !important;
+            }
+        }
+        
+        /* Offcanvas sidebar custom styles */
+        .offcanvas {
+            background-color: var(--surface-dark);
+            border-right: 1px solid var(--border-dark);
+            width: 550px !important;
+        }
+
+        .offcanvas-header {
+            background-color: var(--surface-dark);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .offcanvas-title {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .offcanvas-body {
+            padding: 1.5rem;
+        }
+
+        /* Toggle button styles */
+        #menu-toggle {
+            position: fixed;
+            left: 20px;
+            top: 20px;
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            padding: 12px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            color: var(--text-primary);
+            z-index: 1001;
+            transition: all 0.3s ease-in-out;
+        }
+        
+        #menu-toggle:hover {
+            background: var(--surface-dark-hover);
+            transform: translateX(3px);
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        #menu-toggle .bi {
+            font-size: 1.5rem;
+        }
+
+        /* Main content styles */
+        #mainContent {
+            margin-left: 0;
+            padding: 2rem;
+            padding-top: 80px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Form styles in sidebar */
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            background-color: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--surface-dark-hover);
+            border-color: var(--border-dark);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.25rem rgba(0,0,0,0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Add smooth transitions */
+        .offcanvas {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Plan content styles */
+        #plan-container .card {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        #plan-container .card-body {
+            padding: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        /* Welcome message styles */
+        .welcome-message {
+            text-align: center;
+            padding: 3rem;
+            background-color: var(--surface-dark);
+            border-radius: 10px;
+            margin: 2rem auto;
+            max-width: 800px;
+        }
+        
+        /* Form padding */
+        #sidebar .p-4 {
+            padding: 2rem !important;
+        }
+        
+        /* Heading styles in plan */
+        #plan-container h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        #plan-container h2 {
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        #plan-container h3 {
+            font-size: 1.25rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        /* Plan content paragraphs */
+        #plan-container p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Plan content lists */
+        #plan-container ul, #plan-container ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+        
+        #plan-container li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Budget selector styles */
+        .budget-selector {
+            padding: 1rem;
+            background-color: var(--surface-dark);
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-dark);
+        }
+        
+        .form-range {
+            height: 1.5rem;
+            padding: 0;
+        }
+        
+        .form-range::-webkit-slider-thumb {
+            background: var(--primary);
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -0.5rem;
+        }
+        
+        .form-range::-webkit-slider-runnable-track {
+            background: var(--border-dark);
+            height: 0.25rem;
+            border-radius: 0.125rem;
+        }
+        
+        .budget-value {
+            margin-top: 1rem;
+        }
+        
+        .selected-budget {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .range-labels {
+            font-size: 0.875rem;
+        }
+        
+        .text-muted {
+            color: var(--text-secondary) !important;
+        }
+        
+        /* Add hiding class for smooth transition */
+        .offcanvas.hiding {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+        }
+
+        /* Mobile close button styles */
+        .btn-close-mobile {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-close-mobile:hover {
+            opacity: 0.8;
+        }
+
+        .btn-close-mobile .bi {
+            font-size: 1.75rem;
+        }
+
+        @media (max-width: 576px) {
+            .btn-close-mobile {
+                display: block;
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+            }
+
+            .offcanvas-header {
+                padding-right: 3rem;
+            }
+        }
+        
+        /* Floating Action Buttons */
+        .floating-actions {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+        
+        .floating-btn {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 1rem;
+            font-size: 1.25rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        
+        .floating-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .floating-btn .tooltip {
+            position: absolute;
+            background-color: #000000;
+            color: #ffffff;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.875rem;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .floating-btn:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Select2 Dark Theme Overrides */
+        .select2-container--bootstrap-5 .select2-selection {
+            background-color: var(--surface-dark-hover) !important;
+            border-color: var(--border-dark) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+            background-color: var(--surface-dark) !important;
+            border-color: var(--border-dark) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown {
+            background-color: var(--surface-dark-hover) !important;
+            border-color: var(--border-dark) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown .select2-results__option {
+            color: var(--text-primary) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown .select2-results__option--highlighted {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice__remove {
+            color: var(--text-secondary) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice__remove:hover {
+            background-color: var(--surface-dark) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-search__field {
+            background-color: transparent !important;
+            color: var(--text-primary) !important;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -36,45 +377,33 @@
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
-        <div class="offcanvas-body" id="sidebarBody">
+        <div class="offcanvas-body">
             <form id="marketingForm" class="needs-validation" novalidate>
                 {{ form.csrf_token }}
                 
                 <div class="mb-3">
                     {{ form.website_url.label(class="form-label") }}
-                    <div class="input-group has-validation">
-                        {{ form.website_url(class="form-control", placeholder="example.com", required=True, pattern="^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$") }}
+                    <div class="input-group">
+                        {{ form.website_url(class="form-control", placeholder="https://example.com") }}
                         <button type="button" class="btn btn-outline-secondary" onclick="autofillFromWebsite()">
                             <i class="fas fa-magic"></i> Auto Generate
                         </button>
-                        <div class="invalid-feedback">
-                            Please enter a valid domain name (e.g., example.com)
-                        </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
                     {{ form.company_name.label(class="form-label") }}
-                    {{ form.company_name(class="form-control", placeholder="Enter company name", required=True, minlength="2") }}
-                    <div class="invalid-feedback">
-                        Please enter your company name (minimum 2 characters)
-                    </div>
+                    {{ form.company_name(class="form-control", placeholder="Enter company name") }}
                 </div>
                 
                 <div class="mb-3">
                     {{ form.industry.label(class="form-label") }}
-                    {{ form.industry(class="form-select", required=True) }}
-                    <div class="invalid-feedback">
-                        Please select an industry
-                    </div>
+                    {{ form.industry(class="form-select", placeholder="Select industry") }}
                 </div>
                 
                 <div class="mb-3">
                     {{ form.company_description.label(class="form-label") }}
-                    {{ form.company_description(class="form-control", rows="3", placeholder="Brief description of your company", required=True, minlength="20") }}
-                    <div class="invalid-feedback">
-                        Please provide a company description (minimum 20 characters)
-                    </div>
+                    {{ form.company_description(class="form-control", rows="3", placeholder="Brief description of your company") }}
                 </div>
 
                 <h5 class="mt-3 mb-2">Strategy Details</h5>
@@ -82,18 +411,12 @@
                 
                 <div class="mb-3">
                     {{ form.target_audience.label(class="form-label") }}
-                    {{ form.target_audience(class="form-control", rows="3", placeholder="Describe your target audience", required=True, minlength="20") }}
-                    <div class="invalid-feedback">
-                        Please describe your target audience (minimum 20 characters)
-                    </div>
+                    {{ form.target_audience(class="form-control", rows="3", placeholder="Describe your target audience") }}
                 </div>
                 
                 <div class="mb-3">
                     {{ form.goals.label(class="form-label") }}
-                    {{ form.goals(class="form-select", required=True) }}
-                    <div class="invalid-feedback">
-                        Please select at least one goal
-                    </div>
+                    {{ form.goals(class="form-select") }}
                     <div class="form-text">Select multiple goals or type your own.</div>
                 </div>
                 
@@ -113,12 +436,7 @@
                 </div>
                 
                 <div class="text-center mt-4">
-                    <button type="submit" id="generatePlanBtn" class="btn btn-primary w-100">Generate Plan</button>
-                </div>
-
-                <!-- Scroll Down Icon -->
-                <div class="scroll-down-icon text-center mt-4">
-                    <i class="bi bi-chevron-double-down"></i>
+                    <button type="button" id="generatePlanBtn" class="btn btn-primary btn-lg">Generate Marketing Plan</button>
                 </div>
             </form>
         </div>
@@ -204,9 +522,8 @@
                     budget: $('#budgetSelect').val()
                 };
                 
-                // Show loading spinner
+                // Show loading spinner but keep content visible
                 $('#loadingSpinner').show();
-                $('#marketing-plan-section').hide();
                 $('#errorMessage').hide();
                 
                 // Make API request
@@ -217,20 +534,23 @@
                     data: JSON.stringify(formData),
                     success: function(response) {
                         $('#loadingSpinner').hide();
-                        if (response.success && response.plan) {
+                        if (response.success) {
+                            // First display the new content
                             displayMarketingPlan(response.plan);
-                            // Show floating buttons only when we have content
-                            document.getElementById('floating-actions').classList.remove('d-none');
+                            
+                            // After content is displayed, minimize sidebar and show floating buttons
+                            setTimeout(() => {
+                                closeSidebar();
+                                document.getElementById('floating-actions').classList.remove('d-none');
+                            }, 100);
                         } else {
-                            $('#errorMessage').text(response.error || 'Failed to generate plan').show();
+                            console.log(response.error || 'Failed to generate plan');
+                            $('#generatePlanBtn').prop('disabled', false).html('Generate Marketing Plan');
                         }
-                        // Re-enable the generate button
-                        $('#generatePlanBtn').prop('disabled', false).html('Generate Marketing Plan');
                     },
                     error: function(xhr, status, error) {
                         $('#loadingSpinner').hide();
-                        $('#errorMessage').text('An error occurred while generating the plan. Please try again.').show();
-                        // Re-enable the generate button
+                        console.log('An error occurred while generating the plan. Please try again.');
                         $('#generatePlanBtn').prop('disabled', false).html('Generate Marketing Plan');
                     }
                 });
@@ -238,17 +558,30 @@
         });
         
         function displayMarketingPlan(plan) {
-            if (!plan) return; // Don't proceed if there's no plan content
-            
-            // Hide welcome message
-            document.getElementById('welcome-container').classList.add('d-none');
-            
-            // Show plan container
+            if (!plan) {
+                console.error('No plan content received');
+                return;
+            }
+
+            // First update the content
+            const planContent = document.getElementById('marketing-plan-content');
+            if (planContent) {
+                planContent.innerHTML = marked.parse(plan);
+            }
+
+            // Then show the container and hide welcome message
+            const welcomeContainer = document.getElementById('welcome-container');
             const planContainer = document.getElementById('plan-container');
-            planContainer.classList.remove('d-none');
             
-            // Convert markdown to HTML and display content
-            document.getElementById('marketing-plan-content').innerHTML = marked.parse(plan);
+            if (welcomeContainer) {
+                welcomeContainer.classList.add('d-none');
+            }
+            
+            if (planContainer) {
+                planContainer.classList.remove('d-none');
+                // Scroll to the plan after showing it
+                planContainer.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         function copyToClipboard() {
@@ -271,59 +604,21 @@
                 // Get the content
                 const planContent = document.getElementById('marketing-plan-content');
                 if (!planContent) {
-                    throw new Error('No content available for PDF generation');
+                    console.log('No content to generate PDF');
+                    return;
                 }
 
                 // Create print window with clean styling
                 const printWindow = window.open('', '_blank');
                 printWindow.document.write(`
+                    <!DOCTYPE html>
                     <html>
                         <head>
                             <title>Marketing Plan PDF</title>
                             <style>
-                                body {
-                                    font-family: Arial, sans-serif;
-                                    background-color: #ffffff;
-                                    color: #000000;
-                                    line-height: 1.6;
-                                    padding: 40px;
-                                    margin: 0;
-                                }
-                                * {
-                                    color: #000000 !important;
-                                    background-color: transparent !important;
-                                }
-                                h1 {
-                                    font-size: 24px;
-                                    margin-bottom: 20px;
-                                }
-                                h2 {
-                                    font-size: 20px;
-                                    margin-top: 20px;
-                                    margin-bottom: 10px;
-                                }
-                                h3 {
-                                    font-size: 18px;
-                                    margin-top: 15px;
-                                    margin-bottom: 10px;
-                                }
-                                p {
-                                    font-size: 14px;
-                                    margin: 10px 0;
-                                }
-                                ul, ol {
-                                    margin: 10px 0;
-                                    padding-left: 20px;
-                                }
-                                li {
-                                    font-size: 14px;
-                                    margin: 5px 0;
-                                }
-                                @media print {
-                                    body {
-                                        padding: 0;
-                                    }
-                                }
+                                body { font-family: Arial, sans-serif; }
+                                .section { margin-bottom: 20px; }
+                                h1 { color: #333; }
                             </style>
                         </head>
                         <body>
@@ -345,31 +640,9 @@
                 printWindow.close();
             } catch (error) {
                 console.error('Error generating PDF:', error);
-                showAlert('Failed to generate PDF. Please try again.');
             }
         }
         
-        function showAlert(message, type = 'danger') {
-            const alertContainer = document.getElementById('alert-container');
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
-            alertDiv.role = 'alert';
-            alertDiv.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            
-            // Clear any existing alerts
-            alertContainer.innerHTML = '';
-            alertContainer.appendChild(alertDiv);
-            
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                alertDiv.classList.remove('show');
-                setTimeout(() => alertDiv.remove(), 150);
-            }, 5000);
-        }
-
         function isValidDomain(domain) {
             // Basic domain validation regex
             const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
@@ -379,7 +652,7 @@
         async function autofillFromWebsite() {
             let websiteUrl = document.getElementById('website_url').value.trim();
             if (!websiteUrl) {
-                showAlert('Please enter a website URL');
+                console.log('Please enter a website URL');
                 return;
             }
 
@@ -388,12 +661,17 @@
             
             // Validate the domain
             if (!isValidDomain(websiteUrl)) {
-                showAlert('Please enter a valid domain (e.g., example.com)');
+                console.log('Please enter a valid domain (e.g., example.com)');
                 return;
             }
 
-            // Get the autofill button
+            // Get the autofill button and ensure it exists
             const autofillButton = document.querySelector('.btn-outline-secondary');
+            if (!autofillButton) {
+                console.error('Autofill button not found');
+                return;
+            }
+            
             const defaultButtonState = '<i class="fas fa-magic"></i> Auto Generate';
             
             // Show loading state
@@ -420,21 +698,25 @@
                     throw new Error('Incomplete data received from server');
                 }
 
-                // Update form fields
-                document.getElementById('company_name').value = data.company_name || '';
-                document.getElementById('industry').value = data.industry || '';
-                document.getElementById('company_description').value = data.company_description || '';
+                // Update form fields with null checks
+                const companyNameInput = document.getElementById('company_name');
+                const industryInput = document.getElementById('industry');
+                const descriptionInput = document.getElementById('company_description');
 
-                // Show success message
-                showAlert('Company information successfully retrieved!', 'success');
+                if (companyNameInput) companyNameInput.value = data.company_name || '';
+                if (industryInput) industryInput.value = data.industry || '';
+                if (descriptionInput) descriptionInput.value = data.company_description || '';
+
+                console.log('Company information successfully retrieved!');
 
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.message || 'Failed to analyze website');
             } finally {
-                // Always restore button to default state
-                autofillButton.innerHTML = defaultButtonState;
-                autofillButton.disabled = false;
+                // Only update button if it still exists
+                if (autofillButton) {
+                    autofillButton.innerHTML = defaultButtonState;
+                    autofillButton.disabled = false;
+                }
             }
         }
         
@@ -453,107 +735,24 @@
         
         // Initialize budget display
         window.addEventListener('load', () => {
-            updateBudgetDisplay();
+            const budgetRange = document.getElementById('budgetRange');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            if (budgetRange) {
+                updateBudgetDisplay();
+            }
+            
+            // Only add classes if elements exist
+            if (sidebar) {
+                sidebar.classList.add('active');
+            }
+            if (mainContent) {
+                mainContent.classList.add('shifted');
+            }
         });
-
-        // Handle scroll icon visibility
-        const sidebarBody = document.getElementById('sidebarBody');
-        const scrollIcon = document.querySelector('.scroll-down-icon');
         
-        sidebarBody.addEventListener('scroll', () => {
-            const isScrolledToBottom = sidebarBody.scrollHeight - sidebarBody.scrollTop <= sidebarBody.clientHeight + 10;
-            scrollIcon.style.display = isScrolledToBottom ? 'none' : 'block';
-        });
-
-        // Form validation
-        const form = document.getElementById('marketingForm');
-        const generatePlanBtn = document.getElementById('generatePlanBtn');
-
-        // Initialize form validation
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            // Add validation classes
-            form.classList.add('was-validated');
-            
-            // Check if form is valid
-            if (form.checkValidity()) {
-                submitForm();
-            }
-        });
-
-        function submitForm() {
-            // Show loading state
-            generatePlanBtn.disabled = true;
-            generatePlanBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
-            
-            const formData = new FormData(form);
-            
-            // Add http:// to the website URL if it doesn't have a protocol
-            let websiteUrl = formData.get('website_url');
-            if (websiteUrl && !websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
-                websiteUrl = 'https://' + websiteUrl;
-            }
-            formData.set('website_url', websiteUrl);
-
-            // Make the AJAX request
-            $.ajax({
-                url: '/generate',
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    // Reset button state
-                    generatePlanBtn.disabled = false;
-                    generatePlanBtn.innerHTML = 'Generate Plan';
-                    
-                    if (response.error) {
-                        showAlert(response.error);
-                    } else {
-                        displayMarketingPlan(response);
-                        $('#floating-actions').removeClass('d-none');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    // Reset button state
-                    generatePlanBtn.disabled = false;
-                    generatePlanBtn.innerHTML = 'Generate Plan';
-                    
-                    showAlert('An error occurred while generating the plan. Please try again.');
-                }
-            });
-        }
-
-        // Custom validation for Select2 fields
-        $('#goals').on('change', function() {
-            const isValid = $(this).val() && $(this).val().length > 0;
-            $(this).toggleClass('is-invalid', !isValid)
-                   .toggleClass('is-valid', isValid);
-            
-            // Update the form validation state
-            if (form.classList.contains('was-validated')) {
-                form.checkValidity();
-            }
-        });
-
-        // Real-time validation feedback
-        const inputs = form.querySelectorAll('input, textarea, select');
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                if (form.classList.contains('was-validated')) {
-                    if (this.checkValidity()) {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
-                    } else {
-                        this.classList.remove('is-valid');
-                        this.classList.add('is-invalid');
-                    }
-                }
-            });
-        });
-
-        // Toggle button click handler
+        // Sidebar toggle functionality
         const menuToggle = document.getElementById('menu-toggle');
         const sidebar = document.getElementById('sidebar');
         const mobileClose = document.getElementById('mobile-close');
@@ -623,21 +822,35 @@
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function(response) {
-                    // Reset button state
-                    $('#generatePlanBtn').prop('disabled', false).text('Generate Plan');
+                    // Hide welcome message and show plan
+                    $('#welcome-container').addClass('d-none');
+                    $('#plan-container').removeClass('d-none');
                     
-                    if (response.error) {
-                        showAlert(response.error);
-                    } else {
-                        displayMarketingPlan(response);
-                        $('#floating-actions').removeClass('d-none');
-                    }
+                    // Convert markdown to HTML and display
+                    const htmlContent = marked.parse(response.plan);
+                    $('#marketing-plan-content').html(htmlContent);
+                    
+                    // Close sidebar
+                    sidebar.classList.add('hiding');
+                    sidebar.classList.remove('show');
+                    menuToggle.classList.remove('active');
+                    document.body.classList.remove('sidebar-open');
+                    
+                    // Remove hiding class after transition
+                    setTimeout(() => {
+                        sidebar.classList.remove('hiding');
+                    }, 300);
+                    
+                    // Reset button state
+                    $('#generatePlanBtn').prop('disabled', false).text('Generate Marketing Plan');
                 },
                 error: function(xhr) {
-                    // Reset button state
-                    $('#generatePlanBtn').prop('disabled', false).text('Generate Plan');
-                    
-                    showAlert('An error occurred while generating the plan. Please try again.');
+                    let errorMessage = 'An error occurred while generating the plan.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMessage = xhr.responseJSON.error;
+                    }
+                    console.log(errorMessage);
+                    $('#generatePlanBtn').prop('disabled', false).text('Generate Marketing Plan');
                 }
             });
         });
